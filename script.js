@@ -13,6 +13,7 @@ app = {
 	winner: false,
 	canvas: document.querySelector(`canvas`),
 	context: this.canvas.getContext(`2d`),
+	score: 0,
 	blankGrid: function () {
 		return [
 			[0, 0, 0, 0],
@@ -21,8 +22,9 @@ app = {
 			[0, 0, 0, 0]
 		]
 	},
-	colours: [`#f2edd7`, `#fc766a`, `#de4d44`, `#9e3744`, `#c83e74`, `#ff842a`, `#fed65e`, `#3b3a50`, `#2e5d9f`, `#616247`, `#d7c49e`, `#ff842a`, `#9e3744`, `#c83e74`, `#d7c49e`]
+	colours: [`#f2edd7`, `#fc766a`, `#de4d44`, `#9e3744`, `#c83e74`, `#ff842a`, `#fed65e`, `#3b3a50`, `#2e5d9f`, `#616247`, `#d7c49e`, `#ffdf00`, `#9e3744`, `#c0c0c0`, `#fff`]
 }
+
 // game ending methods
 app.isGameOver = () => {
 	for (let i = 0; i < app.size; i++) {
@@ -43,15 +45,12 @@ app.isGameOver = () => {
 
 app.isGameWon = () => {
 	app.grid.forEach(col => col.forEach(cell => {
-		if (cell === 2048) { 
-			!confirm(`Winner! Want to keep playing?`) ? window.location.reload() : app.winner = true;
-		} 
+		if (cell === 2048 && !app.winner) { 
+			!confirm(`Winner! Want to keep playing?`) ? window.location.reload() : app.winner = true
+		} else if (cell === 32768) {
+			!alert(`We get it, you're good. But I'm sorry - you broke 2048.`) ? window.location.reload() : null
+		}
 	}))
-}
-
-app.checkForGameEnding = () => {
-	!app.winner ? app.isGameWon() : null
-	app.isGameOver()
 }
 
 // grid operation methods
@@ -85,14 +84,17 @@ app.slideCol = (col) => {
 }
 
 app.combineCol = (col) => {
+	let score = 0
 	for (let i = 4; i >= 1; i--) {
 		const firstPosition = col[i]
 		const secondPosition = col[i - 1]
 		if (firstPosition === secondPosition) {
 			col[i] = firstPosition + secondPosition
 			col[i - 1] = 0;
+			score += col[i]
 		}
 	}
+	app.score = app.score + score
 	return col
 }
 
@@ -114,7 +116,12 @@ app.operateOnGrid = () => {
 
 	app.repositionGrid()
 
-	hasChanged ? app.displayNewGrid() : null
+	if (hasChanged) {
+		app.addScore()
+		app.displayNewGrid()
+		app.isGameWon()
+		app.isGameOver()
+	}
 }
 
 // board positioning methods
@@ -178,9 +185,16 @@ app.positionGrid = () => {
 	}
 }
 
+// add score method
+app.addScore = () => {
+	const score = document.getElementById('score')
+	var scoreText = score.textContent
+	score.textContent = scoreText.replace(scoreText, `${app.score}`)
+}
+
 // add new number method
 app.addNumber = () => {
-	const zeroLocations = [];
+	zeroLocations = [];
 	app.grid.map((col, i) => {
 		return col.reduce((acc, cur, j) => {
 			col[j] === 0 ? acc.push({ x: i, y: j }) : null
@@ -188,9 +202,9 @@ app.addNumber = () => {
 		}, zeroLocations)
 	})
 
-	if (zeroLocations.length > 0) {
+	if (zeroLocations.length) {
 		const spot = zeroLocations[Math.floor(Math.random() * zeroLocations.length)]
-		app.grid[spot.x][spot.y] = Math.floor(Math.random()) <= 0.1 ? 2 : 4
+		let newNumber = app.grid[spot.x][spot.y] = Math.floor(Math.random()) <= 0.1 ? 256 : 512
 	}
 }
 
@@ -233,7 +247,7 @@ app.drawGrid = () => {
 }
 
 app.fillText = () => {
-	app.context.font = `60px Arial`;
+	app.context.font = `60px Concert One`;
 	app.context.fillStyle = `black`;
 	app.context.textAlign = `center`;
 	app.grid.forEach((col, i) => col.forEach((cell, j) => {
@@ -255,7 +269,6 @@ app.drawBoard = () => {
 app.displayNewGrid = () => {
 	app.clearBoard()
 	app.drawBoard()
-	app.checkForGameEnding()
 }
 
 // initial page loaded methods

@@ -23,7 +23,7 @@ app = {
 	},
 	colours: [`#f2edd7`, `#fc766a`, `#de4d44`, `#9e3744`, `#c83e74`, `#ff842a`, `#fed65e`, `#3b3a50`, `#2e5d9f`, `#616247`, `#d7c49e`, `#ff842a`, `#9e3744`, `#c83e74`, `#d7c49e`]
 }
-
+// game ending methods
 app.isGameOver = () => {
 	for (let i = 0; i < app.size; i++) {
 		for (let j = 0; j < app.size; j++) {

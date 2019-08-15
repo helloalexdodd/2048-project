@@ -10,6 +10,7 @@ app = {
 	sKey: 83,
 	flipped: false,
 	rotated: false,
+	winner: false,
 	canvas: document.querySelector(`canvas`),
 	context: this.canvas.getContext(`2d`),
 	blankGrid: function () {
@@ -20,13 +21,7 @@ app = {
 			[0, 0, 0, 0]
 		]
 	},
-	colour: {
-		0: `#E4FFBA`,
-		2: `#BF7AFF`,
-		4: `#9381CC`,
-		8: `#81CC85`,
-		16: `#329939`
-	}
+	colours: [`#f2edd7`, `#fc766a`, `#de4d44`, `#9e3744`, `#c83e74`, `#ff842a`, `#fed65e`, `#3b3a50`, `#2e5d9f`, `#616247`, `#d7c49e`, `#ff842a`, `#9e3744`, `#c83e74`, `#d7c49e`]
 }
 
 app.isGameOver = () => {
@@ -43,60 +38,34 @@ app.isGameOver = () => {
 			}
 		}
 	}
-	console.log('Game Over!')
+	!alert('Game Over!') ? window.location.reload() : null 
 }
 
 app.isGameWon = () => {
-	app.grid.forEach(row => 
-		row.forEach(cell => {
-		cell === 2048 ? console.log(`Winner!`) : null
-		})
-	)
+	app.grid.forEach(row => row.forEach(cell => {
+		if (cell === 2048) { 
+			!confirm(`Winner! Want to keep playing?`) ? window.location.reload() : app.winner = true;
+		} 
+	}))
 }
 
-app.copyGrid = (grid) => {
+app.copyGrid = () => {
 	const newGrid = app.blankGrid();
 	app.grid.forEach((row, i) => {
 		row.forEach((cell, j) => {
 			newGrid[i][j] = app.grid[i][j]
 		})
 	})
-	console.log(newGrid, app.grid)
 	return newGrid
 }
 
 app.compare = (newGrid) => {
-	for (let i = 0; i < app.size; i++) {
-		for (let j = 0; j < app.size; j++) {
-			if (newGrid[i][j] !== app.grid[i][j]) {
-				return true
-			}
+	newGrid.forEach((row, i) => row.forEach((cell, j) => {
+		if (newGrid[i][j] !== cell) {
+			return true
 		}
-	}
+	}))
 	return false
-}
-
-app.flipGrid = () => {
-	app.grid.forEach(row => {
-		row.reverse()
-		app.flipped = true;
-	})
-	return app.grid
-}
-
-app.rotateGrid = () => {
-	const newGrid = app.blankGrid()
-	for (let i = 0; i < app.size; i++) {
-		for (let j = 0; j < app.size; j++) {
-			if (!app.rotated) {
-				newGrid[i][j] = app.grid[j][i]
-				app.rotated = true
-			} else {
-				newGrid[j][i] = app.grid[i][j]
-			}
-		}
-	}
-	return newGrid
 }
 
 app.slideRow = (row) => {
@@ -127,48 +96,108 @@ app.operate = (row) => {
 	return row
 }
 
-app.clearGrid = () => {
-	app.context.clearRect(0, 0, 800, 800);
+app.rotateGrid = () => {
+	const newGrid = app.blankGrid()
+	app.grid.forEach((row, i) => row.forEach((cell, j) => {
+		if (!app.rotated) {
+			newGrid[i][j] = cell
+			app.rotated = true
+		} else {
+			newGrid[j][i] = cell
+		}
+	}))
+	return newGrid
 }
 
-app.fillGrid = () => {
-	app.context.font = `64px Arial`;
-	app.context.fillStyle = ``;
+app.flipGrid = () => {
+	app.grid.forEach(row => {
+		row.reverse()
+		app.flipped = true;
+	})
+	return app.grid
+}
+
+app.fillText = () => {
+	app.context.font = `60px Arial`;
+	app.context.fillStyle = `black`;
 	app.context.textAlign = `center`;
-	for (let i = 0; i < app.size; i++) {
-		for (let j = 0; j < app.size; j++) {
-			app.context.fillText(app.grid[i][j], i * 200 + 100, j * 200 + 100)
-			// app.context.fillStyle = `${app.colour[j]}`
-		}
-	}
+	app.grid.forEach((row, i) => row.forEach((cell, j) => {
+		cell !== 0 ? app.context.fillText(cell, i * 150 + 75, j * 150 + 100) : null
+	}))
 }
 
 app.drawGrid = () => {
+	app.context.beginPath()
+	app.context.lineWidth = 2
 	for (let i = 0; i < app.size; i++) {
-		for (let j = 0; j < app.size; j++) {
-			app.context.strokeRect(i * 200, j * 200, 200, 200)
+		app.context.moveTo(i * 150, 0)
+		app.context.lineTo(i * 150, 600)	
+	}
+	for (let i = 0; i < app.size; i++) {
+		app.context.moveTo(0, i * 150)
+		app.context.lineTo(600, i * 150)
+	}
+	app.context.stroke()
+}
 
-			// app.context.fillStyle = `${app.colour[j]]}`
+app.fillGrid = () => {
+	app.grid.forEach((row, i) => row.forEach((cell, j) => {
+		switch (cell) {
+			case 0: app.context.fillStyle = `${app.colours[0]}`; break;
+			case 2: app.context.fillStyle = `${app.colours[1]}`; break;
+			case 4: app.context.fillStyle = `${app.colours[2]}`; break;
+			case 8: app.context.fillStyle = `${app.colours[3]}`; break;
+			case 16: app.context.fillStyle = `${app.colours[4]}`; break;
+			case 32: app.context.fillStyle = `${app.colours[5]}`; break;
+			case 64: app.context.fillStyle = `${app.colours[6]}`; break;
+			case 128: app.context.fillStyle = `${app.colours[7]}`; break;
+			case 256: app.context.fillStyle = `${app.colours[8]}`; break;
+			case 512: app.context.fillStyle = `${app.colours[9]}`; break;
+			case 1024: app.context.fillStyle = `${app.colours[10]}`; break;
+			case 2048: app.context.fillStyle = `${app.colours[11]}`; break;
+			case 4096: app.context.fillStyle = `${app.colours[12]}`; break;
+			case 8192: app.context.fillStyle = `${app.colours[13]}`; break;
+			case 16384: app.context.fillStyle = `${app.colours[14]}`; break;
 		}
+		app.context.fillRect(i * 150, j * 150, 150, 150)
+	}))
+}
+
+app.displayNewGrid = () => {	
+	app.clearBoard()
+	app.drawBoard()
+	!app.winner ? app.isGameWon() : null
+	app.isGameOver()
+}
+
+app.repositionGrid = () => {
+	if (app.flipped) {
+		app.grid = app.flipGrid()
+		app.flipped = false
+	}
+
+	if (app.rotated) {
+		app.grid = app.rotateGrid()
+		app.rotated = false
 	}
 }
 
-app.addNumber = () => {
-	const zeroLocations = [];
-	app.grid.map((row, i) => {
-		return row.reduce((acc, cur, j) => {
-			row[j] === 0 ? acc.push({ x: i, y: j }) : null
-			return acc
-		}, zeroLocations)
+app.operateOnGrid = () => {
+	// the order of these lines super matters
+	const newGrid = app.copyGrid()
+
+	app.grid.forEach((row, i) => {
+		app.grid[i] = app.operate(row)
 	})
 
-	if (zeroLocations.length > 0) {
-		const spot = zeroLocations[Math.floor(Math.random() * zeroLocations.length)]
-		app.grid[spot.x][spot.y] = Math.floor(Math.random()) <= 0.1 ? 2 : 4
-	}
+	const hasChanged = app.compare(newGrid)
+
+	app.repositionGrid()
+
+	hasChanged ? app.displayNewGrid() : null
 }
 
-app.manageKeyDown = () => {
+app.positionGrid = () => {
 	document.onkeydown = (e) => {
 		let played = true
 		switch (e.keyCode) {
@@ -191,45 +220,41 @@ app.manageKeyDown = () => {
 			default: // no moves have been made
 				played = false
 		}
-
-		if (played) {
-			const newGrid = app.copyGrid()
-			console.log(newGrid, app.grid)
-
-			app.grid.forEach((row, i) => {
-				app.grid[i] = app.operate(row)
-			})
-
-			app.flipped ? app.grid = app.flipGrid() : null
-			app.rotated ? app.grid = app.rotateGrid() : null
-
-			const hasChanged = app.compare(newGrid)
-			console.log(hasChanged)
-			if (hasChanged) {
-				app.flipped = false
-				app.rotated = false
-				app.addNumber()
-				app.clearGrid()
-				app.drawGrid()
-				app.fillGrid()
-				// console.clear()
-				console.table(app.grid)
-			}
-
-			app.isGameWon()
-			app.isGameOver()
-		}
+		played ? app.operateOnGrid() : null		
 	}
+}
+
+app.addNumber = () => {
+	const zeroLocations = [];
+	app.grid.map((row, i) => {
+		return row.reduce((acc, cur, j) => {
+			row[j] === 0 ? acc.push({ x: i, y: j }) : null
+			return acc
+		}, zeroLocations)
+	})
+
+	if (zeroLocations.length > 0) {
+		const spot = zeroLocations[Math.floor(Math.random() * zeroLocations.length)]
+		app.grid[spot.x][spot.y] = Math.floor(Math.random()) <= 0.1 ? 2 : 4
+	}
+}
+
+app.drawBoard = () => {
+	app.addNumber()
+	app.fillGrid()
+	app.drawGrid()
+	app.fillText()
+}
+
+app.clearBoard = () => {
+	app.context.clearRect(0, 0, 800, 800);
 }
 
 app.init = () => {
 	app.grid = app.blankGrid()
 	app.addNumber()
-	app.addNumber()
-	app.drawGrid()
-	app.fillGrid()
-	console.table(app.grid)
-	app.manageKeyDown()
+	app.drawBoard()
+	app.positionGrid()
 }
 
 document.addEventListener("DOMContentLoaded", () => {

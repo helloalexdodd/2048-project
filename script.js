@@ -204,7 +204,7 @@ app.addNumber = () => {
 
 	if (zeroLocations.length) {
 		const spot = zeroLocations[Math.floor(Math.random() * zeroLocations.length)]
-		let newNumber = app.grid[spot.x][spot.y] = Math.floor(Math.random()) <= 0.1 ? 256 : 512
+		let newNumber = app.grid[spot.x][spot.y] = Math.floor(Math.random()) <= 0.1 ? 2 : 4;
 	}
 }
 

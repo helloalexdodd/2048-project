@@ -22,7 +22,7 @@ app = {
 			[0, 0, 0, 0]
 		]
 	},
-	colours: [`#f2edd7`, `#fc766a`, `#de4d44`, `#9e3744`, `#c83e74`, `#ff842a`, `#fed65e`, `#3b3a50`, `#2e5d9f`, `#616247`, `#d7c49e`, `#ffdf00`, `#9e3744`, `#c0c0c0`, `#fff`]
+	colours: [`#f2edd7`, `#fc766a`, `#de4d44`, `#9e3744`, `#c83e74`, `#ff842a`, `#fed65e`, `#3b3a50`, `#2e5d9f`, `#616247`, `#d7c49e`, `#ffdf00`, `#2e5d9f`, `#c0c0c0`, `#fff`]
 }
 
 // game ending methods
@@ -40,7 +40,7 @@ app.isGameOver = () => {
 			}
 		}
 	}
-	!alert('Game Over!') ? window.location.reload() : null 
+	!alert('Game Over!') ? window.location.reload() : null
 }
 
 app.isGameWon = () => {
@@ -204,7 +204,7 @@ app.addNumber = () => {
 
 	if (zeroLocations.length) {
 		const spot = zeroLocations[Math.floor(Math.random() * zeroLocations.length)]
-		let newNumber = app.grid[spot.x][spot.y] = Math.floor(Math.random()) <= 0.1 ? 2 : 4;
+		let newNumber = app.grid[spot.x][spot.y] = Math.floor(Math.random()) <= 0.1 ? 256 : 512;
 	}
 }
 
@@ -228,7 +228,7 @@ app.fillGrid = () => {
 			case 8192: app.context.fillStyle = `${app.colours[13]}`; break;
 			case 16384: app.context.fillStyle = `${app.colours[14]}`; break;
 		}
-		app.context.fillRect(i * 150, j * 150, 150, 150)
+		app.context.fillRect(i * 100, j * 100, 100, 100)
 	}))
 }
 
@@ -236,27 +236,27 @@ app.drawGrid = () => {
 	app.context.beginPath()
 	app.context.lineWidth = 2
 	for (let i = 0; i < app.size; i++) {
-		app.context.moveTo(i * 150, 0)
-		app.context.lineTo(i * 150, 600)
+		app.context.moveTo(i * 100, 0)
+		app.context.lineTo(i * 100, 400)
 	}
 	for (let i = 0; i < app.size; i++) {
-		app.context.moveTo(0, i * 150)
-		app.context.lineTo(600, i * 150)
+		app.context.moveTo(0, i * 100)
+		app.context.lineTo(400, i * 100)
 	}
 	app.context.stroke()
 }
 
 app.fillText = () => {
-	app.context.font = `60px Concert One`;
+	app.context.font = `40px Concert One, cursive`;
 	app.context.fillStyle = `black`;
 	app.context.textAlign = `center`;
 	app.grid.forEach((col, i) => col.forEach((cell, j) => {
-		cell !== 0 ? app.context.fillText(cell, i * 150 + 75, j * 150 + 100) : null
+		cell !== 0 ? app.context.fillText(cell, i * 100 + 50, j * 100 + 62.5) : null
 	}))
 }
 
 app.clearBoard = () => {
-	app.context.clearRect(0, 0, 800, 800);
+	app.context.clearRect(0, 0, 400, 400);
 }
 
 app.drawBoard = () => {

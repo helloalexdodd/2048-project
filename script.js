@@ -277,7 +277,7 @@ app.init = () => {
 	app.addNumber()
 	app.drawBoard()
 	app.positionGrid()
-	app.detectSwipe(`body`, app.positionGrid);
+	app.detectSwipe(`wrapper`, app.positionGrid)
 }
 
 document.addEventListener("DOMContentLoaded", () => {

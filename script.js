@@ -219,10 +219,10 @@ app.detectSwipe = () => {
 	let direction = 0
 	const el = document.getElementById(`body`)
 
-	const bodyScrollLock = require('body-scroll-lock');
-	const disableBodyScroll = bodyScrollLock.disableBodyScroll
+	// const bodyScrollLock = require('body-scroll-lock');
+	// const disableBodyScroll = bodyScrollLock.disableBodyScroll;
 		
-	disableBodyScroll(el)
+	bodyScrollLock.disableBodyScroll(el)
  
 	el.addEventListener(`touchstart`, (e) => {
 		const t = e.touches[0]

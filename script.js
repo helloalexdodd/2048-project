@@ -14,9 +14,6 @@ app = {
 	winner: false,
 	canvas: document.querySelector(`canvas`),
 	context: this.canvas.getContext(`2d`),
-	bodyScrollLock: require('body-scroll-lock'),
-	disableBodyScroll: this.disableBodyScroll,
-	enableBodyScroll: this.enableBodyScroll,
 	score: 0,
 	blankGrid: function () {
 		return [
@@ -222,7 +219,7 @@ app.detectSwipe = () => {
 	let direction = 0
 	const el = document.getElementById(`body`)
 
-	app.disableBodyScroll(el)
+	bodyScrollLock.disableBodyScroll(el)
  
 	el.addEventListener(`touchstart`, (e) => {
 		const t = e.touches[0]
@@ -247,9 +244,7 @@ app.detectSwipe = () => {
 			if (swipeDetect.eY > swipeDetect.sY) direction = 40
 			else direction = 38
 		}
-
 		direction > 0 ? app.positionGrid(direction) : null
-
 		direction = 0
 		swipeDetect.sX = 0; swipeDetect.sY = 0; swipeDetect.eX = 0; swipeDetect.eY = 0
 

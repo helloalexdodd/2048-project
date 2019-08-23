@@ -296,55 +296,54 @@ app.init = () => {
 	app.addNumber()
 	app.drawBoard()
 	app.positionGrid()
-	app.detectSwipe(`wrapper`, app.positionGrid)
+	app.detectSwipe(`html`, app.positionGrid)
 }
 
 document.addEventListener("DOMContentLoaded", () => {
 	app.init()
 })
 
-app.detectSwipe = (el, func) => {
+app.detectSwipe = (el, positionGrid) => {
 	swipeDetect = new Object()
 	swipeDetect.sX = 0
 	swipeDetect.sY = 0
 	swipeDetect.eX = 0
 	swipeDetect.eY = 0
 	const minX = 10  //min x swipe for horizontal swipe
-	const maxX = 60  //max x difference for vertical swipe
+	const maxX = 30  //max x difference for vertical swipe
 	const minY = 10  //min y swipe for vertical swipe
-	const maxY = 60  //max y difference for horizontal swipe
-	let direction = ""
+	const maxY = 30  //max y difference for horizontal swipe
+	let direction = 0
 	ele = document.getElementById(el)
 	
-	ele.addEventListener('touchstart', function(e) {
+	ele.addEventListener(`touchstart`, function(e) {
 		const t = e.touches[0]
 		swipeDetect.sX = t.screenX
 		swipeDetect.sY = t.screenY
 	}, false)
 
-	ele.addEventListener('touchmove', function(e) {
+	ele.addEventListener(`touchmove`, function(e) {
 		e.preventDefault()
 		const t = e.touches[0]
 		swipeDetect.eX = t.screenX
 		swipeDetect.eY = t.screenY
 	}, false)
 
-	ele.addEventListener('touchend', function(e) {
+	ele.addEventListener(`touchend`, function(e) {
 		//horizontal detection
 		if ((((swipeDetect.eX - minX > swipeDetect.sX) || (swipeDetect.eX + minX < swipeDetect.sX)) && ((swipeDetect.eY < swipeDetect.sY + maxY) && (swipeDetect.sY > swipeDetect.eY - maxY) && (swipeDetect.eX > 0)))) {
 			if (swipeDetect.eX > swipeDetect.sX) direction = 39
 			else direction = 37
-		}
-		//vertical detection
+		}//vertical detection
 		else if ((((swipeDetect.eY - minY > swipeDetect.sY) || (swipeDetect.eY + minY < swipeDetect.sY)) && ((swipeDetect.eX < swipeDetect.sX + maxX) && (swipeDetect.sX > swipeDetect.eX - maxX) && (swipeDetect.eY > 0)))) {
 			if (swipeDetect.eY > swipeDetect.sY) direction = 40
 			else direction = 38
 		}
 
-		if (direction != "") {
-			if (typeof func == 'function') app.positionGrid(direction)
-		}
-		direction = ""
+		direction > 0 ? app.positionGrid(direction) : null
+
+		direction = 0
 		swipeDetect.sX = 0; swipeDetect.sY = 0; swipeDetect.eX = 0; swipeDetect.eY = 0
+
 	}, false)
 }

@@ -219,12 +219,6 @@ app.detectSwipe = () => {
 	let direction = 0
 	const el = document.getElementById(`body`)
 
-	window.onresize = function () {
-		document.body.height = window.innerHeight;
-	}
-	
-	window.onresize(); // called to initially set the height.
-
 	el.addEventListener(`touchstart`, (e) => {
 		const t = e.touches[0]
 		swipeDetect.sX = t.screenX

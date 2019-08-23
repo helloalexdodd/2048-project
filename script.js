@@ -158,7 +158,26 @@ app.rotateGrid = () => {
 	return newGrid
 }
 
-app.positionGrid = () => {
+app.positionGrid = (direction) => {
+	let played = true
+	switch (direction) {
+		case app.downArrow: // don't change the direction of the board
+			break;
+		case app.upArrow: // flip the board
+			app.grid = app.flipGrid()
+			break;
+		case app.rightArrow: // rotate the board
+			app.grid = app.rotateGrid()
+			break
+		case app.leftArrow: // rotate and flip the board
+			app.grid = app.rotateGrid()
+			app.grid = app.flipGrid()
+			break;
+		default: // no moves have been made
+			played = false
+	}
+	played ? app.operateOnGrid() : null		
+
 	document.onkeydown = (e) => {
 		let played = true
 		switch (e.keyCode) {
@@ -285,48 +304,47 @@ document.addEventListener("DOMContentLoaded", () => {
 })
 
 app.detectSwipe = (el, func) => {
-	swipe_det = new Object();
-	swipe_det.sX = 0; swipe_det.sY = 0; swipe_det.eX = 0; swipe_det.eY = 0;
-	const min_x = 30;  //min x swipe for horizontal swipe
-	const max_x = 30;  //max x difference for vertical swipe
-	const min_y = 50;  //min y swipe for vertical swipe
-	const max_y = 60;  //max y difference for horizontal swipe
-	const direc = "";
-	ele = document.getElementById(el);
+	swipeDetect = new Object()
+	swipeDetect.sX = 0
+	swipeDetect.sY = 0
+	swipeDetect.eX = 0
+	swipeDetect.eY = 0
+	const minX = 30  //min x swipe for horizontal swipe
+	const maxX = 30  //max x difference for vertical swipe
+	const minY = 50  //min y swipe for vertical swipe
+	const maxY = 60  //max y difference for horizontal swipe
+	let direction = ""
+	ele = document.getElementById(el)
 	
-	ele.addEventListener('touchstart', function (e) {
-		const t = e.touches[0];
-		swipe_det.sX = t.screenX;
-		swipe_det.sY = t.screenY;
-	}, false);
-	
-	ele.addEventListener('touchmove', function (e) {
-		e.preventDefault();
-		const t = e.touches[0];
-		swipe_det.eX = t.screenX;
-		swipe_det.eY = t.screenY;
-	}, false);
-	
-	ele.addEventListener('touchend', function (e) {
+	ele.addEventListener('touchstart', function(e) {
+		const t = e.touches[0]
+		swipeDetect.sX = t.screenX
+		swipeDetect.sY = t.screenY
+	}, false)
+
+	ele.addEventListener('touchmove', function(e) {
+		e.preventDefault()
+		const t = e.touches[0]
+		swipeDetect.eX = t.screenX
+		swipeDetect.eY = t.screenY
+	}, false)
+
+	ele.addEventListener('touchend', function(e) {
 		//horizontal detection
-		if ((((swipe_det.eX - min_x > swipe_det.sX) || (swipe_det.eX + min_x < swipe_det.sX)) && ((swipe_det.eY < swipe_det.sY + max_y) && (swipe_det.sY > swipe_det.eY - max_y) && (swipe_det.eX > 0)))) {
-			if (swipe_det.eX > swipe_det.sX) direc = "r";
-			else direc = "l";
+		if ((((swipeDetect.eX - minX > swipeDetect.sX) || (swipeDetect.eX + minX < swipeDetect.sX)) && ((swipeDetect.eY < swipeDetect.sY + maxY) && (swipeDetect.sY > swipeDetect.eY - maxY) && (swipeDetect.eX > 0)))) {
+			if (swipeDetect.eX > swipeDetect.sX) direction = 39
+			else direction = 37
 		}
 		//vertical detection
-		else if ((((swipe_det.eY - min_y > swipe_det.sY) || (swipe_det.eY + min_y < swipe_det.sY)) && ((swipe_det.eX < swipe_det.sX + max_x) && (swipe_det.sX > swipe_det.eX - max_x) && (swipe_det.eY > 0)))) {
-			if (swipe_det.eY > swipe_det.sY) direc = "d";
-			else direc = "u";
+		else if ((((swipeDetect.eY - minY > swipeDetect.sY) || (swipeDetect.eY + minY < swipeDetect.sY)) && ((swipeDetect.eX < swipeDetect.sX + maxX) && (swipeDetect.sX > swipeDetect.eX - maxX) && (swipeDetect.eY > 0)))) {
+			if (swipeDetect.eY > swipeDetect.sY) direction = 40
+			else direction = 38
 		}
 
-		if (direc != "") {
-			if (typeof func == 'function') func(el, direc);
+		if (direction != "") {
+			if (typeof func == 'function') app.positionGrid(direction)
 		}
-		direc = "";
-		swipe_det.sX = 0; swipe_det.sY = 0; swipe_det.eX = 0; swipe_det.eY = 0;
-	}, false);
-}
-
-function myfunction(el, d) {
-	alert("you swiped on element with id '" + el + "' to " + d + " direction");
+		direction = ""
+		swipeDetect.sX = 0; swipeDetect.sY = 0; swipeDetect.eX = 0; swipeDetect.eY = 0
+	}, false)
 }

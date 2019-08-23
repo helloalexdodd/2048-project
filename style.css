@@ -28,16 +28,12 @@ html { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: 
 
 html {
 	font-size: 125%;
-}
-
-body {
-	background-image: -webkit-gradient(linear, 56% 37%, 0% 100%, from(#2E5D9F), to(#F2EDD7), color-stop(.8,#D7C49E));
-	height: 100vh;
-}
-
-html,
-body {
 	overflow: hidden;
+}
+
+body {
+	background-image:-webkit-gradient(linear, 56% 37%, 0% 100%, from(#2E5D9F), to(#F2EDD7), color-stop(.8,#D7C49E));
+	height: 100vh;
 }
 
 .wrapper {

@@ -303,33 +303,33 @@ document.addEventListener("DOMContentLoaded", () => {
 	app.init()
 })
 
-app.detectSwipe = (el, positionGrid) => {
-	swipeDetect = new Object()
+app.detectSwipe = (html) => {
+	const swipeDetect = new Object()
 	swipeDetect.sX = 0
 	swipeDetect.sY = 0
 	swipeDetect.eX = 0
 	swipeDetect.eY = 0
-	const minX = 10  //min x swipe for horizontal swipe
+	const minX = 30  //min x swipe for horizontal swipe
 	const maxX = 30  //max x difference for vertical swipe
-	const minY = 10  //min y swipe for vertical swipe
+	const minY = 30  //min y swipe for vertical swipe
 	const maxY = 30  //max y difference for horizontal swipe
 	let direction = 0
-	ele = document.getElementById(el)
+	const el = document.getElementById(html)
 	
-	ele.addEventListener(`touchstart`, function(e) {
+	el.addEventListener(`touchstart`, (e) => {
 		const t = e.touches[0]
 		swipeDetect.sX = t.screenX
 		swipeDetect.sY = t.screenY
 	}, false)
 
-	ele.addEventListener(`touchmove`, function(e) {
+	el.addEventListener(`touchmove`, (e) => {
 		e.preventDefault()
 		const t = e.touches[0]
 		swipeDetect.eX = t.screenX
 		swipeDetect.eY = t.screenY
 	}, false)
 
-	ele.addEventListener(`touchend`, function(e) {
+	el.addEventListener(`touchend`, () => {
 		//horizontal detection
 		if ((((swipeDetect.eX - minX > swipeDetect.sX) || (swipeDetect.eX + minX < swipeDetect.sX)) && ((swipeDetect.eY < swipeDetect.sY + maxY) && (swipeDetect.sY > swipeDetect.eY - maxY) && (swipeDetect.eX > 0)))) {
 			if (swipeDetect.eX > swipeDetect.sX) direction = 39

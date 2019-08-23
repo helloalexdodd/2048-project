@@ -309,9 +309,9 @@ app.detectSwipe = (el, func) => {
 	swipeDetect.sY = 0
 	swipeDetect.eX = 0
 	swipeDetect.eY = 0
-	const minX = 30  //min x swipe for horizontal swipe
-	const maxX = 30  //max x difference for vertical swipe
-	const minY = 50  //min y swipe for vertical swipe
+	const minX = 10  //min x swipe for horizontal swipe
+	const maxX = 60  //max x difference for vertical swipe
+	const minY = 10  //min y swipe for vertical swipe
 	const maxY = 60  //max y difference for horizontal swipe
 	let direction = ""
 	ele = document.getElementById(el)

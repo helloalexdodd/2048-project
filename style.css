@@ -13,7 +13,6 @@ html { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: 
   font-style: normal;
   font-weight: 400;
   src: local('Concert One'),
-       local('Concert_One'),
 			 url(Concert_One/ConcertOne-Regular.ttf) format('truetype');
 }
 
@@ -22,7 +21,6 @@ html { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: 
   font-style: normal;
   font-weight: 400;
   src: local('Lato'),
-       local('Lato-Regular'),
 			 url(Lato/Lato-Regular.ttf) format('truetype');
 }
 
@@ -66,17 +64,17 @@ header p {
 	font-size: 1.5rem;
 }
 
+.mainContainer {
+	display: flex;
+	align-items: center;
+}
+
 .canvasContainer {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	width: 100%;
 	height: auto;
-}
-
-.mainContainer {
-	display: flex;
-	align-items: center;
 }
 
 .instructionsContainer {
@@ -102,12 +100,6 @@ canvas {
 	font-size: 1.5rem;
 }
 
-@media (max-width: 1030px) {
-	.wrapper {
-		/* width: 100%; */
-	}
-}
-
 @media (max-width: 700px) {
 	.canvasContainer {
 		flex-direction: column;
@@ -116,23 +108,17 @@ canvas {
 		width: 100%;
 	}
 
+	canvas {
+		width: 90%;
+		margin: 50px 0;
+	}
+	
 	.instructionsContainer {
 		width: 100%;
 	}
 
 	.instructionsContainer div {
 		margin-bottom: 0;
-	}
-}
-
-@media (max-width: 630px) {
-	.canvasContainer {
-		width: 100%;
-	}
-
-	canvas {
-		width: 90%;
-		margin: 50px 0;
 	}
 }
 

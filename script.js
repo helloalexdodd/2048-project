@@ -161,7 +161,6 @@ app.rotateGrid = () => {
 
 app.positionGrid = (e) => {
 	let played = true
-	console.log(app.swipeDirection)
 	switch (app.swipeDirection || e.keyCode) {
 		case app.downArrow: // don't change the direction of the board
 		case app.sKey:
@@ -191,11 +190,10 @@ app.detectSwipe = () => {
 	swipeDetect.sY = 0
 	swipeDetect.eX = 0
 	swipeDetect.eY = 0
-	const minX = 80
+	const minX = 60
 	const maxX = 80
 	const minY = 60
 	const maxY = 80
-
 	const body = document.getElementById(`body`)
 
 	body.addEventListener(`touchstart`, (e) => {
@@ -315,7 +313,7 @@ app.init = () => {
 	app.grid = app.blankGrid()
 	app.addNumber()
 	app.drawBoard()
-	document.onkeydown = (e) => {app.positionGrid(e)}
+	document.onkeydown = (e) => app.positionGrid(e)
 	app.detectSwipe()
 }
 

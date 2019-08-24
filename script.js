@@ -185,11 +185,11 @@ app.positionGrid = (e) => {
 }
 
 app.detectSwipe = () => {
-	const swipeDetect = {}
-	swipeDetect.sX = 0
-	swipeDetect.sY = 0
-	swipeDetect.eX = 0
-	swipeDetect.eY = 0
+	const swipe = {}
+	swipe.startX = 0
+	swipe.startY = 0
+	swipe.endX = 0
+	swipe.endY = 0
 	const minX = 60
 	const maxX = 80
 	const minY = 60
@@ -197,28 +197,39 @@ app.detectSwipe = () => {
 	const body = document.getElementById(`body`)
 
 	body.addEventListener(`touchstart`, (e) => {
-		swipeDetect.sX = e.touches[0].screenX
-		swipeDetect.sY = e.touches[0].screenY
+		swipe.startX = e.touches[0].screenX
+		swipe.startY = e.touches[0].screenY
 	})
 
 	body.addEventListener(`touchmove`, (e) => {
-		swipeDetect.eX = e.touches[0].screenX
-		swipeDetect.eY = e.touches[0].screenY
+		swipe.endX = e.touches[0].screenX
+		swipe.endY = e.touches[0].screenY
 	})
 
 	body.addEventListener(`touchend`, () => {
 		//horizontal detection
-		if ((((swipeDetect.eX - minX > swipeDetect.sX) || (swipeDetect.eX + minX < swipeDetect.sX)) && ((swipeDetect.eY < swipeDetect.sY + maxY) &&  (swipeDetect.sY > swipeDetect.eY - maxY) && (swipeDetect.eX > 0)))) {
-			swipeDetect.eX > swipeDetect.sX ? app.swipeDirection = 39 : app.swipeDirection = 37
+		if ((((swipe.endX - minX > swipe.startX) || 
+					(swipe.endX + minX < swipe.startX)) && 
+					((swipe.endY < swipe.startY + maxY) &&  
+					(swipe.startY > swipe.endY - maxY) && 
+					(swipe.endX > 0)))) {
+			swipe.endX > swipe.startX ? app.swipeDirection = 39 : app.swipeDirection = 37
 		}
-		//vertical detection
-		else if ((((swipeDetect.eY - minY > swipeDetect.sY) || (swipeDetect.eY + minY < swipeDetect.sY)) && ((swipeDetect.eX < swipeDetect.sX + maxX) && (swipeDetect.sX > swipeDetect.eX - maxX) && (swipeDetect.eY > 0)))) {
-			swipeDetect.eY > swipeDetect.sY ? app.swipeDirection = 40 : app.swipeDirection = 38
-		}
-		app.swipeDirection > 0 ? app.positionGrid() : null
-		app.swipeDirection = 0
-		swipeDetect.sX = 0; swipeDetect.sY = 0; swipeDetect.eX = 0; swipeDetect.eY = 0
 
+		else if ((((swipe.endY - minY > swipe.startY) ||
+							(swipe.endY + minY < swipe.startY)) &&
+							((swipe.endX < swipe.startX + maxX) &&
+							(swipe.startX > swipe.endX - maxX) &&
+							(swipe.endY > 0)))) {
+			swipe.endY > swipe.startY ? app.swipeDirection = 40 : app.swipeDirection = 38
+		}
+
+		app.swipeDirection ? app.positionGrid() : null
+		app.swipeDirection = 0
+		swipe.startX = 0
+		swipe.startY = 0
+		swipe.endX = 0
+		swipe.endY = 0
 	})
 }
 

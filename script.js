@@ -11,7 +11,7 @@ app = {
 	canvas: document.querySelector(`canvas`),
 	context: this.canvas.getContext(`2d`),
 	score: 0,
-	blankGrid: function () {
+	blankGrid: function() {
 		return [
 			[0, 0, 0, 0],
 			[0, 0, 0, 0],
@@ -30,6 +30,18 @@ app = {
 		minY: 60,
 		maxY: 80,
 		direction: 0,
+		horizontal: function() {
+			let { swipe: { startX, startY, minX, maxY, endX, endY } } = app 
+			return (((endX - minX > startX) || (endX + minX < startX)) && ((endY < startY + maxY) && (startY > endY - maxY) && (endX > 0)))
+		},
+		vertical: function () {
+			let { swipe: { startX, startY, minY, maxX, endX, endY } } = app 
+			return (((endY - minY > startY) || (endY + minY < startY)) && ((endX < startX + maxX) && (startX > endX - maxX) && (endY > 0)))
+		},
+		left: () => this.app.swipe.horizontal() && this.app.swipe.endX < this.app.swipe.startX,
+		right: () => this.app.swipe.horizontal() && this.app.swipe.endX > this.app.swipe.startX,
+		up: () => this.app.swipe.vertical() && this.app.swipe.endY < this.app.swipe.startY,
+		down: () => this.app.swipe.vertical() && this.app.swipe.endY > this.app.swipe.startY
 	}
 }
 
@@ -135,17 +147,17 @@ app.operateOnGrid = () => {
 // board positioning methods
 app.repositionGrid = () => {
 	if (app.flipped) {
-		app.grid = app.flipGrid()
+		app.grid = app.flippedGrid()
 		app.flipped = false
 	}
 
 	if (app.rotated) {
-		app.grid = app.rotateGrid()
+		app.grid = app.rotatedGrid()
 		app.rotated = false
 	}
 }
 
-app.flipGrid = () => {
+app.flippedGrid = () => {
 	app.grid.forEach(col => {
 		col.reverse()
 		app.flipped = true;
@@ -153,7 +165,7 @@ app.flipGrid = () => {
 	return app.grid
 }
 
-app.rotateGrid = () => {
+app.rotatedGrid = () => {
 	const newGrid = app.blankGrid()
 	app.grid.forEach((col, i) => col.forEach((cell, j) => {
 		if (!app.rotated) {
@@ -165,22 +177,23 @@ app.rotateGrid = () => {
 	}))
 	return newGrid
 }
+
 // position grid based on input
 app.positionGrid = (e) => {
-	const { swipe, down, up, right, left, flipGrid, rotateGrid, operateOnGrid } = app	
+	const { swipe, down, up, right, left, flippedGrid, rotatedGrid, operateOnGrid } = app	
 	let played = true
 	switch (swipe.direction || e.keyCode) {
 		case down: // don't change the direction of the board
 			break;
 		case up: // flip the board
-			app.grid = flipGrid()
+			app.grid = flippedGrid()
 			break;
 		case right: // rotate the board
-			app.grid = rotateGrid()
+			app.grid = rotatedGrid()
 			break
 		case left: // rotate and flip the board
-			app.grid = rotateGrid()
-			app.grid = flipGrid()
+			app.grid = rotatedGrid()
+			app.grid = flippedGrid()
 			break;
 		default: // no moves have been made
 			played = false
@@ -190,24 +203,16 @@ app.positionGrid = (e) => {
 
 // swipe event listener
 app.detectSwipe = () => {
-	const { body, left, right, up, down, positionGrid, swipe, swipe: { minX, maxX, minY, maxY } } = app 
-	let { startX, startY, endX, endY } = swipe
-
-	swipe.horizontal = () => (((endX - minX > startX) || (endX + minX < startX)) && ((endY < startY + maxY) && (startY > endY - maxY) && (endX > 0)))
-	swipe.vertical = () => (((endY - minY > startY) || (endY + minY < startY)) && ((endX < startX + maxX) && (startX > endX - maxX) && (endY > 0)))
-	swipe.left = () => swipe.horizontal() && endX < startX
-	swipe.right = () => swipe.horizontal() && endX > startX
-	swipe.up = () => swipe.vertical() && endY < startY
-	swipe.down = () => swipe.vertical() && endY > startY
-
+	const { body, left, right, up, down, positionGrid, swipe } = app 
+	
 	body.addEventListener(`touchstart`, (e) => {
-		startX = e.touches[0].screenX
-		startY = e.touches[0].screenY
+		swipe.startX = e.touches[0].screenX
+		swipe.startY = e.touches[0].screenY
 	})
 
 	body.addEventListener(`touchmove`, (e) => {
-		endX = e.touches[0].screenX
-		endY = e.touches[0].screenY
+		swipe.endX = e.touches[0].screenX
+		swipe.endY = e.touches[0].screenY
 	})
 
 	body.addEventListener(`touchend`, () => {
@@ -256,48 +261,51 @@ app.addNumber = () => {
 
 // board drawing methods
 app.fillGrid = () => {
+	const { context, colours } = app
 	app.grid.forEach((col, i) => col.forEach((cell, j) => {
 		switch (cell) {
-			case 0: app.context.fillStyle = `${app.colours[0]}`; break;
-			case 2: app.context.fillStyle = `${app.colours[1]}`; break;
-			case 4: app.context.fillStyle = `${app.colours[2]}`; break;
-			case 8: app.context.fillStyle = `${app.colours[3]}`; break;
-			case 16: app.context.fillStyle = `${app.colours[4]}`; break;
-			case 32: app.context.fillStyle = `${app.colours[5]}`; break;
-			case 64: app.context.fillStyle = `${app.colours[6]}`; break;
-			case 128: app.context.fillStyle = `${app.colours[7]}`; break;
-			case 256: app.context.fillStyle = `${app.colours[8]}`; break;
-			case 512: app.context.fillStyle = `${app.colours[9]}`; break;
-			case 1024: app.context.fillStyle = `${app.colours[10]}`; break;
-			case 2048: app.context.fillStyle = `${app.colours[11]}`; break;
-			case 4096: app.context.fillStyle = `${app.colours[12]}`; break;
-			case 8192: app.context.fillStyle = `${app.colours[13]}`; break;
-			case 16384: app.context.fillStyle = `${app.colours[14]}`; break;
+			case 0: context.fillStyle = `${colours[0]}`; break;
+			case 2: context.fillStyle = `${colours[1]}`; break;
+			case 4: context.fillStyle = `${colours[2]}`; break;
+			case 8: context.fillStyle = `${colours[3]}`; break;
+			case 16: context.fillStyle = `${colours[4]}`; break;
+			case 32: context.fillStyle = `${colours[5]}`; break;
+			case 64: context.fillStyle = `${colours[6]}`; break;
+			case 128: context.fillStyle = `${colours[7]}`; break;
+			case 256: context.fillStyle = `${colours[8]}`; break;
+			case 512: context.fillStyle = `${colours[9]}`; break;
+			case 1024: context.fillStyle = `${colours[10]}`; break;
+			case 2048: context.fillStyle = `${colours[11]}`; break;
+			case 4096: context.fillStyle = `${colours[12]}`; break;
+			case 8192: context.fillStyle = `${colours[13]}`; break;
+			case 16384: context.fillStyle = `${colours[14]}`; break;
 		}
-		app.context.fillRect(i * 100, j * 100, 100, 100)
+		context.fillRect(i * 100, j * 100, 100, 100)
 	}))
 }
 
 app.drawGrid = () => {
-	app.context.beginPath()
-	app.context.lineWidth = 2
-	for (let i = 0; i < app.size; i++) {
-		app.context.moveTo(i * 100, 0)
-		app.context.lineTo(i * 100, 400)
+	const { context, size } = app
+	context.beginPath()
+	context.lineWidth = 2
+	for (let i = 0; i < size; i++) {
+		context.moveTo(i * 100, 0)
+		context.lineTo(i * 100, 400)
 	}
-	for (let i = 0; i < app.size; i++) {
-		app.context.moveTo(0, i * 100)
-		app.context.lineTo(400, i * 100)
+	for (let i = 0; i < size; i++) {
+		context.moveTo(0, i * 100)
+		context.lineTo(400, i * 100)
 	}
-	app.context.stroke()
+	context.stroke()
 }
 
 app.fillText = () => {
-	app.context.font = `40px Concert One, cursive`;
-	app.context.fillStyle = `black`;
-	app.context.textAlign = `center`;
-	app.grid.forEach((col, i) => col.forEach((cell, j) => {
-		cell !== 0 ? app.context.fillText(cell, i * 100 + 50, j * 100 + 62.5) : null
+	const { context, grid } = app
+	context.font = `40px Concert One, cursive`;
+	context.fillStyle = `black`;
+	context.textAlign = `center`;
+	grid.forEach((col, i) => col.forEach((cell, j) => {
+		cell !== 0 ? context.fillText(cell, i * 100 + 50, j * 100 + 62.5) : null
 	}))
 }
 

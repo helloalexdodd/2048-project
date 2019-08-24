@@ -1,17 +1,13 @@
 app = {
 	size: 4,
-	rightArrow: 39,
-	leftArrow: 37,
-	upArrow: 38,
-	downArrow: 40,
-	dKey: 68,
-	aKey: 65,
-	wKey: 87,
-	sKey: 83,
-	swipeDirection: 0,
+	left: 37,
+	up: 38,
+	right: 39,
+	down: 40,
 	flipped: false,
 	rotated: false,
 	winner: false,
+	body: document.getElementById(`body`),
 	canvas: document.querySelector(`canvas`),
 	context: this.canvas.getContext(`2d`),
 	score: 0,
@@ -23,7 +19,18 @@ app = {
 			[0, 0, 0, 0]
 		]
 	},
-	colours: [`#f2edd7`, `#fc766a`, `#de4d44`, `#9e3744`, `#c83e74`, `#ff842a`, `#fed65e`, `#3b3a50`, `#2e5d9f`, `#616247`, `#d7c49e`, `#ffdf00`, `#2e5d9f`, `#c0c0c0`, `#fff`]
+	colours: [`#f2edd7`, `#fc766a`, `#de4d44`, `#9e3744`, `#c83e74`, `#ff842a`, `#fed65e`, `#3b3a50`, `#2e5d9f`, `#616247`, `#d7c49e`, `#ffdf00`, `#2e5d9f`, `#c0c0c0`, `#fff`],
+	swipe: {
+		startX: 0,
+		startY: 0,
+		endX: 0,
+		endY: 0,
+		minX: 60,
+		maxX: 80,
+		minY: 60,
+		maxY: 80,
+		direction: 0,
+	}
 }
 
 // game ending methods
@@ -158,78 +165,69 @@ app.rotateGrid = () => {
 	}))
 	return newGrid
 }
-
+// position grid based on input
 app.positionGrid = (e) => {
+	const { swipe, down, up, right, left, flipGrid, rotateGrid, operateOnGrid } = app	
 	let played = true
-	switch (app.swipeDirection || e.keyCode) {
-		case app.downArrow: // don't change the direction of the board
-		case app.sKey:
+	switch (swipe.direction || e.keyCode) {
+		case down: // don't change the direction of the board
 			break;
-		case app.upArrow: // flip the board
-		case app.wKey:
-			app.grid = app.flipGrid()
+		case up: // flip the board
+			app.grid = flipGrid()
 			break;
-		case app.rightArrow: // rotate the board
-		case app.dKey:
-			app.grid = app.rotateGrid()
+		case right: // rotate the board
+			app.grid = rotateGrid()
 			break
-		case app.leftArrow: // rotate and flip the board
-		case app.aKey:
-			app.grid = app.rotateGrid()
-			app.grid = app.flipGrid()
+		case left: // rotate and flip the board
+			app.grid = rotateGrid()
+			app.grid = flipGrid()
 			break;
 		default: // no moves have been made
 			played = false
 	}
-	played ? app.operateOnGrid() : null
+	played ? operateOnGrid() : null
 }
 
+// swipe event listener
 app.detectSwipe = () => {
-	const swipe = {}
-	swipe.startX = 0
-	swipe.startY = 0
-	swipe.endX = 0
-	swipe.endY = 0
-	const minX = 60
-	const maxX = 80
-	const minY = 60
-	const maxY = 80
-	const body = document.getElementById(`body`)
+	const { body, left, right, up, down, positionGrid, swipe, swipe: { minX, maxX, minY, maxY } } = app 
+	let { startX, startY, endX, endY } = swipe
+
+	swipe.horizontal = () => (((endX - minX > startX) || (endX + minX < startX)) && ((endY < startY + maxY) && (startY > endY - maxY) && (endX > 0)))
+	swipe.vertical = () => (((endY - minY > startY) || (endY + minY < startY)) && ((endX < startX + maxX) && (startX > endX - maxX) && (endY > 0)))
+	swipe.left = () => swipe.horizontal() && endX < startX
+	swipe.right = () => swipe.horizontal() && endX > startX
+	swipe.up = () => swipe.vertical() && endY < startY
+	swipe.down = () => swipe.vertical() && endY > startY
 
 	body.addEventListener(`touchstart`, (e) => {
-		swipe.startX = e.touches[0].screenX
-		swipe.startY = e.touches[0].screenY
+		startX = e.touches[0].screenX
+		startY = e.touches[0].screenY
 	})
 
 	body.addEventListener(`touchmove`, (e) => {
-		swipe.endX = e.touches[0].screenX
-		swipe.endY = e.touches[0].screenY
+		endX = e.touches[0].screenX
+		endY = e.touches[0].screenY
 	})
 
 	body.addEventListener(`touchend`, () => {
-		//horizontal detection
-		if ((((swipe.endX - minX > swipe.startX) || 
-					(swipe.endX + minX < swipe.startX)) && 
-					((swipe.endY < swipe.startY + maxY) &&  
-					(swipe.startY > swipe.endY - maxY) && 
-					(swipe.endX > 0)))) {
-			swipe.endX > swipe.startX ? app.swipeDirection = 39 : app.swipeDirection = 37
+		if (swipe.left()) {
+			swipe.direction = left
+		} else if (swipe.right()) {
+			swipe.direction = right
+		}	else if (swipe.up()) {
+			swipe.direction = up
+		} else if (swipe.down()) {
+			swipe.direction = down
 		}
-
-		else if ((((swipe.endY - minY > swipe.startY) ||
-							(swipe.endY + minY < swipe.startY)) &&
-							((swipe.endX < swipe.startX + maxX) &&
-							(swipe.startX > swipe.endX - maxX) &&
-							(swipe.endY > 0)))) {
-			swipe.endY > swipe.startY ? app.swipeDirection = 40 : app.swipeDirection = 38
+		if (swipe.direction) {
+			positionGrid()
+			swipe.direction = 0
+			startX = 0
+			startY = 0
+			endX = 0
+			endY = 0
 		}
-
-		app.swipeDirection ? app.positionGrid() : null
-		app.swipeDirection = 0
-		swipe.startX = 0
-		swipe.startY = 0
-		swipe.endX = 0
-		swipe.endY = 0
 	})
 }
 
@@ -318,14 +316,13 @@ app.displayNewGrid = () => {
 	app.clearBoard()
 	app.drawBoard()
 }
-
-// initial page loaded methods
+// initial method calls
 app.init = () => {
 	app.grid = app.blankGrid()
 	app.addNumber()
 	app.drawBoard()
-	document.onkeydown = (e) => app.positionGrid(e)
 	app.detectSwipe()
+	document.onkeydown = (e) => app.positionGrid(e)
 }
 
 document.addEventListener("DOMContentLoaded", () => {

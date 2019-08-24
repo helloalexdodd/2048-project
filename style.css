@@ -28,6 +28,7 @@ html { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: 
 
 html {
 	font-size: 125%;
+	font-family: 'Lato', sans-serif;
 	overflow: hidden;
 }
 
@@ -37,14 +38,14 @@ body {
 }
 
 .wrapper {
-	max-width: 1280px;
+	max-width: 1000px;
 	width: 80%;
 	text-align: center;
 	margin: 0 auto;
 }
 
 h1 {
-	margin: 40px 0 0px;
+	margin: 40px 0 20px;
 	padding: 0;
 	color: #d7c49e;
 	font-size: 5rem;
@@ -62,20 +63,66 @@ h1 {
 
 header p {
 	margin: 0;
-	font-family: 'Lato', sans-serif;
 	font-size: 1.5rem;
 }
 
 .canvasContainer {
 	display: flex;
 	justify-content: center;
+	align-items: center;
 	width: 100%;
 	height: auto;
+}
+
+.mainContainer {
+	display: flex;
+	align-items: center;
+}
+
+.instructionsContainer {
+	display: flex;
+	flex-direction: column;
+	width: 25%;
+	font-size: 1.1rem;
 }
 
 canvas {
 	margin: 50px;
 	border: 1px solid black;
+}
+
+.instructionsContainer div {
+	margin-bottom: 20px;
+}
+
+.instructionsContainer span {
+	width: 25%;
+	margin: 0;
+	font-weight: bold;
+	font-size: 1.5rem;
+}
+
+@media (max-width: 1030px) {
+	.wrapper {
+		/* width: 100%; */
+	}
+}
+
+@media (max-width: 700px) {
+	.canvasContainer {
+		flex-direction: column;
+		justify-content: flex-start;
+		height: 100vh;
+		width: 100%;
+	}
+
+	.instructionsContainer {
+		width: 100%;
+	}
+
+	.instructionsContainer div {
+		margin-bottom: 0;
+	}
 }
 
 @media (max-width: 630px) {
@@ -95,7 +142,7 @@ canvas {
 	}
 
 	header p {
-		font-size: 1.2rem;
+		font-size: 1.4rem;
 	}
 
 	canvas {

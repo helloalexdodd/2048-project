@@ -333,6 +333,4 @@ app.init = () => {
 	document.onkeydown = (e) => app.positionGrid(e)
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-	app.init()
-})
+document.addEventListener("DOMContentLoaded", () => document.fonts.ready.then(() => app.init()))
